@@ -43,6 +43,39 @@ export const Projects: CollectionConfig = {
       },
     },
     {
+      name: 'showInList',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        description: 'Show this project in the list view',
+      },
+    },
+    {
+      name: 'client',
+      type: 'text',
+      admin: {
+        description: 'Client name (optional)',
+      },
+    },
+    {
+      name: 'location',
+      type: 'text',
+      admin: {
+        description: 'Project location (optional)',
+      },
+    },
+    {
+      name: 'completionDate',
+      type: 'date',
+      admin: {
+        description: 'Project completion date (optional)',
+        date: {
+          pickerAppearance: 'dayOnly',
+          displayFormat: 'MMM d, yyyy',
+        },
+      },
+    },
+    {
       name: 'order',
       type: 'number',
       defaultValue: 0,

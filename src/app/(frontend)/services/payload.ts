@@ -32,6 +32,10 @@ export type ProjectData = {
     alt?: string;
   };
   featured?: boolean;
+  showInList?: boolean;
+  client?: string;
+  location?: string;
+  completionDate?: string;
   order?: number;
 };
 
@@ -274,18 +278,30 @@ export async function getClients(): Promise<ClientData | null> {
 }
 
 // Fetch projects data from Payload
-export async function getProjects(options?: { limit?: number, featured?: boolean }): Promise<ProjectData[] | null> {
+export async function getProjects(options?: { 
+  limit?: number, 
+  featured?: boolean,
+  showInList?: boolean
+}): Promise<ProjectData[] | null> {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-    let queryParams = 'sort=order';
+    // Build query parameters
+    const queryParams = new URLSearchParams();
     
     if (options?.limit) {
-      queryParams += `&limit=${options.limit}`;
+      queryParams.append('limit', options.limit.toString());
     }
     
     if (options?.featured) {
-      queryParams += `&where[featured][equals]=true`;
+      queryParams.append('where[featured][equals]', 'true');
     }
+    
+    if (options?.showInList) {
+      queryParams.append('where[showInList][equals]', 'true');
+    }
+    
+    // Add sort parameter
+    queryParams.append('sort', 'order');
     
     const response = await fetch(`${apiUrl}/api/projects?${queryParams}`, {
       next: { 

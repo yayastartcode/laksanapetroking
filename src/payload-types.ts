@@ -409,6 +409,22 @@ export interface Project {
    */
   featured?: boolean | null;
   /**
+   * Show this project in the list view
+   */
+  showInList?: boolean | null;
+  /**
+   * Client name (optional)
+   */
+  client?: string | null;
+  /**
+   * Project location (optional)
+   */
+  location?: string | null;
+  /**
+   * Project completion date (optional)
+   */
+  completionDate?: string | null;
+  /**
    * Display order (lower numbers appear first)
    */
   order?: number | null;
@@ -724,6 +740,10 @@ export interface ProjectsSelect<T extends boolean = true> {
   description?: T;
   image?: T;
   featured?: T;
+  showInList?: T;
+  client?: T;
+  location?: T;
+  completionDate?: T;
   order?: T;
   updatedAt?: T;
   createdAt?: T;

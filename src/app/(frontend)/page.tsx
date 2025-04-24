@@ -6,6 +6,7 @@ import OurServices from './components/OurServices';
 import ProductGallery from './components/ProductGallery';
 import BrandSection from './components/BrandSection';
 import ProjectGallery from './components/ProjectGallery';
+import ProjectList from './components/ProjectList';
 import ClientSection from './components/ClientSection';
 import { getHeader, getHero, getAboutUs, getServices, getProducts, getBrands, getProjects, getClients } from './services/payload';
 
@@ -17,7 +18,8 @@ export default async function HomePage() {
   const services = await getServices();
   const products = await getProducts();
   const brands = await getBrands();
-  const projects = await getProjects({ featured: true, limit: 8 });
+  const featuredProjects = await getProjects({ featured: true, limit: 8 });
+  const listProjects = await getProjects({ showInList: true });
   const clientData = await getClients();
   
   return (
@@ -64,11 +66,21 @@ export default async function HomePage() {
         ]}
       />
 
+      {/* Project List Section */}
+      {listProjects && listProjects.length > 0 && (
+        <ProjectList 
+          projects={listProjects}
+          title="Daftar Proyek Kami"
+          subtitle="PORTOFOLIO"
+          description="Berikut adalah daftar proyek yang telah kami selesaikan."
+        />
+      )}
+      
       {/* Project Gallery Section */}
-      {projects && projects.length > 0 && (
+      {featuredProjects && featuredProjects.length > 0 && (
         <ProjectGallery 
-          projects={projects}
-          title="Proyek Kami"
+          projects={featuredProjects}
+          title="Galeri Proyek"
           subtitle="PORTOFOLIO"
           description="Lihat beberapa proyek yang telah kami selesaikan. Klik pada gambar untuk melihat detail lebih lanjut."
         />
