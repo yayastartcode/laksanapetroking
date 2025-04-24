@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import { HeaderData } from '../services/payload';
 
 type HeaderProps = {
@@ -46,7 +47,7 @@ export default function Header({ header }: HeaderProps) {
     <header className={`fixed top-0 left-0 w-full z-50 ${scrolled ? 'scrolled' : 'bg-transparent'}`}>
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <div className="flex items-center">
-          <a href="/" className="text-white font-bold text-2xl flex items-center">
+          <Link href="/" className="text-white font-bold text-2xl flex items-center">
             {logoImage ? (
               <Image 
                 src={logoImage.url} 
@@ -61,17 +62,17 @@ export default function Header({ header }: HeaderProps) {
               </div>
             )}
             {logoText}
-          </a>
+          </Link>
         </div>
         <nav className="hidden md:flex space-x-6">
           {navigationItems.map((item) => (
-            <a 
-              key={item.id} 
-              href={item.link || '#'} 
+            <Link
+              key={item.id}
+              href={item.link || '#'}
               className={`text-white font-medium hover:text-red-500 transition ${pathname === (item.link || '') ? 'text-red-500' : ''}`}
             >
               {item.label}
-            </a>
+            </Link>
           ))}
         </nav>
  
