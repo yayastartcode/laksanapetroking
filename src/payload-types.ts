@@ -6,23 +6,111 @@
  * and re-run `payload generate:types` to regenerate this file.
  */
 
+/**
+ * Supported timezones in IANA format.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "supportedTimezones".
+ */
+export type SupportedTimezones =
+  | 'Pacific/Midway'
+  | 'Pacific/Niue'
+  | 'Pacific/Honolulu'
+  | 'Pacific/Rarotonga'
+  | 'America/Anchorage'
+  | 'Pacific/Gambier'
+  | 'America/Los_Angeles'
+  | 'America/Tijuana'
+  | 'America/Denver'
+  | 'America/Phoenix'
+  | 'America/Chicago'
+  | 'America/Guatemala'
+  | 'America/New_York'
+  | 'America/Bogota'
+  | 'America/Caracas'
+  | 'America/Santiago'
+  | 'America/Buenos_Aires'
+  | 'America/Sao_Paulo'
+  | 'Atlantic/South_Georgia'
+  | 'Atlantic/Azores'
+  | 'Atlantic/Cape_Verde'
+  | 'Europe/London'
+  | 'Europe/Berlin'
+  | 'Africa/Lagos'
+  | 'Europe/Athens'
+  | 'Africa/Cairo'
+  | 'Europe/Moscow'
+  | 'Asia/Riyadh'
+  | 'Asia/Dubai'
+  | 'Asia/Baku'
+  | 'Asia/Karachi'
+  | 'Asia/Tashkent'
+  | 'Asia/Calcutta'
+  | 'Asia/Dhaka'
+  | 'Asia/Almaty'
+  | 'Asia/Jakarta'
+  | 'Asia/Bangkok'
+  | 'Asia/Shanghai'
+  | 'Asia/Singapore'
+  | 'Asia/Tokyo'
+  | 'Asia/Seoul'
+  | 'Australia/Brisbane'
+  | 'Australia/Sydney'
+  | 'Pacific/Guam'
+  | 'Pacific/Noumea'
+  | 'Pacific/Auckland'
+  | 'Pacific/Fiji';
+
 export interface Config {
   auth: {
     users: UserAuthOperations;
   };
+  blocks: {};
   collections: {
     users: User;
     media: Media;
+    header: Header;
+    hero: Hero;
+    'about-us': AboutUs;
+    services: Service;
+    products: Product;
+    brands: Brand;
+    projects: Project;
+    clients: Client;
+    footer: Footer;
+    'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
+  collectionsJoins: {};
+  collectionsSelect: {
+    users: UsersSelect<false> | UsersSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
+    header: HeaderSelect<false> | HeaderSelect<true>;
+    hero: HeroSelect<false> | HeroSelect<true>;
+    'about-us': AboutUsSelect<false> | AboutUsSelect<true>;
+    services: ServicesSelect<false> | ServicesSelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
+    brands: BrandsSelect<false> | BrandsSelect<true>;
+    projects: ProjectsSelect<false> | ProjectsSelect<true>;
+    clients: ClientsSelect<false> | ClientsSelect<true>;
+    footer: FooterSelect<false> | FooterSelect<true>;
+    'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
+    'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
+    'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
+  };
   db: {
-    defaultIDType: string;
+    defaultIDType: number;
   };
   globals: {};
+  globalsSelect: {};
   locale: null;
   user: User & {
     collection: 'users';
+  };
+  jobs: {
+    tasks: unknown;
+    workflows: unknown;
   };
 }
 export interface UserAuthOperations {
@@ -48,7 +136,7 @@ export interface UserAuthOperations {
  * via the `definition` "users".
  */
 export interface User {
-  id: string;
+  id: number;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -65,8 +153,9 @@ export interface User {
  * via the `definition` "media".
  */
 export interface Media {
-  id: string;
+  id: number;
   alt: string;
+  prefix?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -80,14 +169,378 @@ export interface Media {
   focalY?: number | null;
 }
 /**
+ * Configure the site header
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "header".
+ */
+export interface Header {
+  id: number;
+  title: string;
+  logo: {
+    image: number | Media;
+    text: string;
+    /**
+     * Single letter or icon to display in the logo circle
+     */
+    logoIcon: string;
+  };
+  /**
+   * Add navigation items to the header
+   */
+  navigation?:
+    | {
+        label: string;
+        link: string;
+        /**
+         * Order of the navigation item (lower numbers appear first)
+         */
+        order: number;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Configure the hero slider section
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "hero".
+ */
+export interface Hero {
+  id: number;
+  title: string;
+  /**
+   * Add slides to the hero section (1-5 slides)
+   */
+  slides: {
+    image: number | Media;
+    title: string;
+    description: string;
+    buttonText: string;
+    buttonLink: string;
+    /**
+     * Order of the slide (lower numbers appear first)
+     */
+    order: number;
+    id?: string | null;
+  }[];
+  settings?: {
+    /**
+     * Autoplay speed in milliseconds (5000 = 5 seconds)
+     */
+    autoplaySpeed?: number | null;
+    /**
+     * Show thumbnails navigation
+     */
+    showThumbnails?: boolean | null;
+    /**
+     * Show slide counter
+     */
+    showCounter?: boolean | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Configure the About Us section
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "about-us".
+ */
+export interface AboutUs {
+  id: number;
+  /**
+   * Main heading for the About Us section
+   */
+  title: string;
+  /**
+   * Subtitle displayed above the main heading
+   */
+  subtitle: string;
+  /**
+   * Main descriptive text for the About Us section
+   */
+  description: string;
+  /**
+   * Bullet points highlighting key features or benefits
+   */
+  features: {
+    feature: string;
+    id?: string | null;
+  }[];
+  /**
+   * Text displayed on the call-to-action button
+   */
+  buttonText: string;
+  /**
+   * URL the button links to
+   */
+  buttonLink: string;
+  /**
+   * Image displayed in the About Us section
+   */
+  image: number | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Configure the Services section
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services".
+ */
+export interface Service {
+  id: number;
+  /**
+   * Main heading for the Services section
+   */
+  title: string;
+  /**
+   * Subtitle displayed above the main heading
+   */
+  subtitle: string;
+  /**
+   * Main descriptive text for the Services section
+   */
+  description: string;
+  /**
+   * Individual service cards to display
+   */
+  serviceItems: {
+    /**
+     * Service title
+     */
+    title: string;
+    /**
+     * Brief description of the service
+     */
+    description: string;
+    /**
+     * Icon representing the service
+     */
+    icon: number | Media;
+    /**
+     * URL the "Learn more" link points to
+     */
+    link?: string | null;
+    /**
+     * Display order (lower numbers appear first)
+     */
+    order: number;
+    id?: string | null;
+  }[];
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Product gallery
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: number;
+  /**
+   * Product title
+   */
+  title: string;
+  /**
+   * Product image
+   */
+  image: number | Media;
+  /**
+   * Display order (lower numbers appear first)
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Brand logos and information
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "brands".
+ */
+export interface Brand {
+  id: number;
+  /**
+   * Brand name
+   */
+  name: string;
+  /**
+   * Brand logo
+   */
+  logo: number | Media;
+  /**
+   * Width of the logo
+   */
+  width?: ('w-24' | 'w-32' | 'w-40') | null;
+  /**
+   * Display order (lower numbers appear first)
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Project gallery of completed work
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects".
+ */
+export interface Project {
+  id: number;
+  /**
+   * Project title
+   */
+  title: string;
+  /**
+   * Short project description (optional)
+   */
+  description?: string | null;
+  /**
+   * Project image
+   */
+  image: number | Media;
+  /**
+   * Feature this project on the homepage
+   */
+  featured?: boolean | null;
+  /**
+   * Display order (lower numbers appear first)
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Client section with large image
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "clients".
+ */
+export interface Client {
+  id: number;
+  /**
+   * Section title
+   */
+  title: string;
+  /**
+   * Optional subtitle
+   */
+  subtitle?: string | null;
+  /**
+   * Optional description text
+   */
+  description?: string | null;
+  /**
+   * Large client image (logos collage)
+   */
+  image: number | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Footer information
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer".
+ */
+export interface Footer {
+  id: number;
+  /**
+   * Business name
+   */
+  businessName: string;
+  /**
+   * Business address
+   */
+  address: string;
+  /**
+   * Phone number
+   */
+  phone: string;
+  /**
+   * Email address (optional)
+   */
+  email?: string | null;
+  /**
+   * Copyright text
+   */
+  copyright?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-locked-documents".
+ */
+export interface PayloadLockedDocument {
+  id: number;
+  document?:
+    | ({
+        relationTo: 'users';
+        value: number | User;
+      } | null)
+    | ({
+        relationTo: 'media';
+        value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'header';
+        value: number | Header;
+      } | null)
+    | ({
+        relationTo: 'hero';
+        value: number | Hero;
+      } | null)
+    | ({
+        relationTo: 'about-us';
+        value: number | AboutUs;
+      } | null)
+    | ({
+        relationTo: 'services';
+        value: number | Service;
+      } | null)
+    | ({
+        relationTo: 'products';
+        value: number | Product;
+      } | null)
+    | ({
+        relationTo: 'brands';
+        value: number | Brand;
+      } | null)
+    | ({
+        relationTo: 'projects';
+        value: number | Project;
+      } | null)
+    | ({
+        relationTo: 'clients';
+        value: number | Client;
+      } | null)
+    | ({
+        relationTo: 'footer';
+        value: number | Footer;
+      } | null);
+  globalSlug?: string | null;
+  user: {
+    relationTo: 'users';
+    value: number | User;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: string;
+  id: number;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   key?: string | null;
   value?:
@@ -107,11 +560,230 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: string;
+  id: number;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users_select".
+ */
+export interface UsersSelect<T extends boolean = true> {
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  prefix?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "header_select".
+ */
+export interface HeaderSelect<T extends boolean = true> {
+  title?: T;
+  logo?:
+    | T
+    | {
+        image?: T;
+        text?: T;
+        logoIcon?: T;
+      };
+  navigation?:
+    | T
+    | {
+        label?: T;
+        link?: T;
+        order?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "hero_select".
+ */
+export interface HeroSelect<T extends boolean = true> {
+  title?: T;
+  slides?:
+    | T
+    | {
+        image?: T;
+        title?: T;
+        description?: T;
+        buttonText?: T;
+        buttonLink?: T;
+        order?: T;
+        id?: T;
+      };
+  settings?:
+    | T
+    | {
+        autoplaySpeed?: T;
+        showThumbnails?: T;
+        showCounter?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "about-us_select".
+ */
+export interface AboutUsSelect<T extends boolean = true> {
+  title?: T;
+  subtitle?: T;
+  description?: T;
+  features?:
+    | T
+    | {
+        feature?: T;
+        id?: T;
+      };
+  buttonText?: T;
+  buttonLink?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services_select".
+ */
+export interface ServicesSelect<T extends boolean = true> {
+  title?: T;
+  subtitle?: T;
+  description?: T;
+  serviceItems?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        icon?: T;
+        link?: T;
+        order?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products_select".
+ */
+export interface ProductsSelect<T extends boolean = true> {
+  title?: T;
+  image?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "brands_select".
+ */
+export interface BrandsSelect<T extends boolean = true> {
+  name?: T;
+  logo?: T;
+  width?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects_select".
+ */
+export interface ProjectsSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  image?: T;
+  featured?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "clients_select".
+ */
+export interface ClientsSelect<T extends boolean = true> {
+  title?: T;
+  subtitle?: T;
+  description?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer_select".
+ */
+export interface FooterSelect<T extends boolean = true> {
+  businessName?: T;
+  address?: T;
+  phone?: T;
+  email?: T;
+  copyright?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-locked-documents_select".
+ */
+export interface PayloadLockedDocumentsSelect<T extends boolean = true> {
+  document?: T;
+  globalSlug?: T;
+  user?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-preferences_select".
+ */
+export interface PayloadPreferencesSelect<T extends boolean = true> {
+  user?: T;
+  key?: T;
+  value?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-migrations_select".
+ */
+export interface PayloadMigrationsSelect<T extends boolean = true> {
+  name?: T;
+  batch?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
